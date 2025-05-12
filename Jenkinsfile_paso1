@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    environment {
+        PYTHON = "C:\python\python.exe"
+    }
+
+    stages {
+        stage('Get code') {
+            steps {
+                echo 'Me voy a traer el código'
+                git 'https://github.com/angelabtte/PROYECTO'
+                bat 'dir'
+                echo "${env.WORKSPACE}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'No hay que compilar, esto es Python'
+            }
+        }
+
+        stage('Unit') {
+            steps {
+                bat("set PYTHONPATH=%WORKSPACE% && %PYTHON% -m pytest --junitxml=result-unit.xml test\unit")
+            }
+        }
+    }
+}

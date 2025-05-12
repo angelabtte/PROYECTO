@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+
+    environment {
+        PYTHON_PATH = 'C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe'
+    }
+
+    stages {
+        stage('Preparar Entorno') {
+            steps {
+                bat 'whoami'
+                bat 'hostname'
+                bat 'cd'
+            }
+        }
+
+        stage('Levantar API') {
+            steps {
+                echo 'Iniciando API en segundo plano...'
+                bat 'start cmd /c "%PYTHON_PATH% -m app.api"'
+            }
+        }
+
+        stage('Verificar API Disponible') {
+            steps {
+                echo 'Verificando que la API esté disponible antes de continuar...'
+                bat '''
+                :check_loop
+                curl -s -o nul -w "%%{http_code}" http://localhost:5000/ | findstr 200
+                if errorlevel 1 (
+                    echo API no disponible aún. Esperando 5 segundos...
+                    timeout /t 5 > nul
+                    goto check_loop
+                )
+                echo API disponible. Continuando con las pruebas...
+                '''
+            }
+        }
+
+        stage('Ejecutar Pruebas') {
+            steps {
+                echo 'Instalando pytest (si es necesario)...'
+                bat '%PYTHON_PATH% -m pip install pytest'
+
+                echo 'Ejecutando pruebas con pytest...'
+                bat '%PYTHON_PATH% -m pytest --junitxml=report.xml'
+            }
+        }
+
+        stage('Finalizar') {
+            steps {
+                echo 'Cerrando API y limpiando procesos...'
+                bat 'taskkill /F /IM python.exe || exit 0'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finalizado. Consulta los resultados en el log.'
+        }
+    }
+}
