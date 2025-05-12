@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Identificar Agente') {
+            steps {
+                echo 'Ejecutando whoami...'
+                bat 'whoami'  // Identifica el usuario del agente
+
+                echo 'Ejecutando hostname...'
+                bat 'hostname'  // Muestra el nombre del agente (máquina)
+
+                echo 'Mostrando directorio de trabajo...'
+                bat 'cd'  // Muestra la carpeta actual (Workspace)
+            }
+        }
+
+        stage('Finalización') {
+            steps {
+                echo 'Pipeline finalizado. Revisa el log para los datos requeridos.'
+            }
+        }
+    }
+}
