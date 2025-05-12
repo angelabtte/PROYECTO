@@ -1,7 +1,9 @@
-import math
+import app
+
 
 class InvalidPermissions(Exception):
     pass
+
 
 class Calculator:
     def add(self, x, y):
@@ -19,25 +21,21 @@ class Calculator:
     def divide(self, x, y):
         self.check_types(x, y)
         if y == 0:
-            raise TypeError("Division by zero is not possible")
+            raise                                                TypeError("Division by zero is not possible")
+
         return x / y
 
     def power(self, x, y):
         self.check_types(x, y)
         return x ** y
 
-    def sqrt(self, x):
-        if not isinstance(x, (int, float)):
-            raise TypeError("Parameter must be a number")
-        if x < 0:
-            raise ValueError("Cannot calculate square root of a negative number")
-        return math.sqrt(x)
-
     def check_types(self, x, y):
-        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+        if not isinstance(x, (int, float)) or                                                not isinstance(y, (int, float)):
             raise TypeError("Parameters must be numbers")
+
 
 if __name__ == "__main__":  # pragma: no cover
     calc = Calculator()
     result = calc.add(2, 2)
     print(result)
+
